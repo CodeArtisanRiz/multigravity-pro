@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-REPO="Pulkit7070/multigravity-pro"
+REPO="CodeArtisanRiz/multigravity-pro"
 BRANCH="main"
 RAW="https://raw.githubusercontent.com/$REPO/$BRANCH"
 INSTALL_DIR="/usr/local/bin"

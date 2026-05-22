@@ -1,8 +1,8 @@
 # multigravity-pro
 
-[![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/Pulkit7070/multigravity-pro)
-[![GitHub Profile](https://img.shields.io/badge/GitHub-Profile-blue?logo=github)](https://github.com/Pulkit7070)
-![Stars](https://img.shields.io/github/stars/Pulkit7070/multigravity-pro?style=social)
+[![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/CodeArtisanRiz/multigravity-pro)
+[![GitHub Profile](https://img.shields.io/badge/GitHub-Profile-blue?logo=github)](https://github.com/CodeArtisanRiz)
+![Stars](https://img.shields.io/github/stars/CodeArtisanRiz/multigravity-pro?style=social)
 
 <img src="assets/multigravity-logo.jpg" alt="Multigravity" width="80">
 
@@ -23,7 +23,7 @@ No more logging in and out. Just switch profiles instantly or use them all at on
 Open your terminal and paste this:
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Pulkit7070/multigravity-pro/main/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/CodeArtisanRiz/multigravity-pro/main/install.sh)"
 ```
 
 ### Windows
@@ -31,7 +31,7 @@ Open your terminal and paste this:
 Open **PowerShell** and paste:
 
 ```powershell
-irm https://raw.githubusercontent.com/Pulkit7070/multigravity-pro/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/CodeArtisanRiz/multigravity-pro/main/install.ps1 | iex
 ```
 
 That's it. Multigravity is now installed. Verify everything is set up correctly:
