@@ -1,8 +1,8 @@
-# multigravity-pro
+# multigravity-pro-v2
 
-[![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/CodeArtisanRiz/multigravity-pro)
+[![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/CodeArtisanRiz/multigravity-pro-v2)
 [![GitHub Profile](https://img.shields.io/badge/GitHub-Profile-blue?logo=github)](https://github.com/CodeArtisanRiz)
-![Stars](https://img.shields.io/github/stars/CodeArtisanRiz/multigravity-pro?style=social)
+![Stars](https://img.shields.io/github/stars/CodeArtisanRiz/multigravity-pro-v2?style=social)
 
 <img src="assets/multigravity-logo.jpg" alt="Multigravity" width="80">
 
@@ -23,7 +23,7 @@ No more logging in and out. Just switch profiles instantly or use them all at on
 Open your terminal and paste this:
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/CodeArtisanRiz/multigravity-pro/main/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/CodeArtisanRiz/multigravity-pro-v2/main/install.sh)"
 ```
 
 ### Windows
@@ -31,7 +31,7 @@ Open your terminal and paste this:
 Open **PowerShell** and paste:
 
 ```powershell
-irm https://raw.githubusercontent.com/CodeArtisanRiz/multigravity-pro/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/CodeArtisanRiz/multigravity-pro-v2/main/install.ps1 | iex
 ```
 
 That's it. Multigravity is now installed. Verify everything is set up correctly:
@@ -217,10 +217,13 @@ Everything from the original [multigravity-cli](https://github.com/sujitagarwal/
 
 ---
 
-## Credits
+## Credits & Attribution
 
-Multigravity Pro is built on top of [multigravity-cli](https://github.com/sujitagarwal/multigravity-cli) by [Sujit Agarwal](https://github.com/sujitagarwal).
+Multigravity Pro v2 is a fork of the excellent [multigravity-cli](https://github.com/sujitagarwal/multigravity-cli) developed by [Sujit Agarwal](https://github.com/sujitagarwal) (GitHub: [@sujitagarwal](https://github.com/sujitagarwal)).
+
+To ensure clear attribution and contributions: the core architecture, CLI logic, multi-profile isolation, and original commands are entirely **Sujit Agarwal's** original work. [@CodeArtisanRiz](https://github.com/CodeArtisanRiz) built on top of this solid foundation to add the **Antigravity IDE** (`--ide` flag) support, alongside other enhancements. Huge credit goes to Sujit for creating the original tool!
 
 ## License
 
 MIT
+

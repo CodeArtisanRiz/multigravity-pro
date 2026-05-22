@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Get Started  Multigravity Pro</title>
+  <title>Get Started  Multigravity Pro v2</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -637,7 +637,7 @@
   <nav class="nav">
     <a href="index.html" class="nav-brand">
       <img src="assets/multigravity-logo.jpg" alt="">
-      Multigravity Pro
+      Multigravity Pro v2
     </a>
     <div class="nav-links">
       <a href="#setup">Setup</a>
@@ -807,7 +807,7 @@
 
         <div class="os-content active" id="step2-mac">
           <div class="code-block">
-            <pre><code>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/CodeArtisanRiz/multigravity-pro/main/install.sh)"</code></pre>
+            <pre><code>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/CodeArtisanRiz/multigravity-pro-v2/main/install.sh)"</code></pre>
             <button class="copy-btn" onclick="copyCode(this)">Copy</button>
           </div>
           <div class="step-note">
@@ -815,8 +815,11 @@
           </div>
         </div>
         <div class="os-content" id="step2-windows">
+          <p class="step-text" style="margin-top: 0;">
+            Copy the command below, paste it into PowerShell, and press <strong>Enter</strong>.
+          </p>
           <div class="code-block">
-            <pre><code>irm https://raw.githubusercontent.com/CodeArtisanRiz/multigravity-pro/main/install.ps1 | iex</code></pre>
+            <pre><code>irm https://raw.githubusercontent.com/CodeArtisanRiz/multigravity-pro-v2/main/install.ps1 | iex</code></pre>
             <button class="copy-btn" onclick="copyCode(this)">Copy</button>
           </div>
           <div class="step-note">
@@ -996,8 +999,8 @@
       <div class="faq-a">
         Run <code>multigravity doctor</code> first &mdash; it checks what's wrong.<br><br>
         <strong>"command not found"</strong> &mdash; Close your terminal and open a new one. The install added a command that needs a fresh terminal to appear.<br><br>
-        <strong>"Antigravity not found"</strong> &mdash; Install the Antigravity IDE from the official website first.<br><br>
-        Still stuck? <a href="https://github.com/CodeArtisanRiz/multigravity-pro/issues">Open an issue on GitHub</a>.
+        <strong>"Antigravity not found"</strong> &mdash; First, check the "Doctor check" section above. If it's a new issue or error not covered here:
+        Still stuck? <a href="https://github.com/CodeArtisanRiz/multigravity-pro-v2/issues">Open an issue on GitHub</a>.
       </div>
     </div>
 
@@ -1046,7 +1049,7 @@
 
       <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 28px;">
         <!-- GitHub -->
-        <a href="https://github.com/CodeArtisanRiz/multigravity-pro" style="
+        <a href="https://github.com/CodeArtisanRiz/multigravity-pro-v2" style="
           display: flex; align-items: center; gap: 10px;
           background: #24292f; color: #fff;
           padding: 12px 24px; border-radius: 6px;
@@ -1072,7 +1075,7 @@
       </div>
 
       <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-        <a href="https://github.com/CodeArtisanRiz/multigravity-pro/issues" style="
+        <a href="https://github.com/CodeArtisanRiz/multigravity-pro-v2/issues" style="
           display: inline-block;
           padding: 10px 20px; border-radius: 6px;
           font-size: 0.88em; font-weight: 600;
@@ -1080,7 +1083,7 @@
           border: 1px solid #d1d9e0;
           transition: background 0.15s; text-decoration: none;
         " onmouseover="this.style.background='#eef1f5'" onmouseout="this.style.background='#f6f8fa'">Report a bug or request a feature</a>
-        <a href="https://github.com/CodeArtisanRiz/multigravity-pro/discussions" style="
+        <a href="https://github.com/CodeArtisanRiz/multigravity-pro-v2/discussions" style="
           display: inline-block;
           padding: 10px 20px; border-radius: 6px;
           font-size: 0.88em; font-weight: 600;
@@ -1097,12 +1100,12 @@
   <div class="footer">
     <div class="footer-links">
       <a href="index.html">Developer Docs</a>
-      <a href="https://github.com/CodeArtisanRiz/multigravity-pro">GitHub</a>
+      <a href="https://github.com/CodeArtisanRiz/multigravity-pro-v2">GitHub</a>
       <a href="https://x.com/Psudokit">X / Twitter</a>
-      <a href="https://github.com/CodeArtisanRiz/multigravity-pro/issues">Get Help</a>
+      <a href="https://github.com/CodeArtisanRiz/multigravity-pro-v2/issues">Get Help</a>
     </div>
     <p class="footer-credit">
-      Multigravity Pro &mdash; built on <a href="https://github.com/sujitagarwal/multigravity-cli">multigravity-cli</a> by Sujit Agarwal. MIT License.
+      Multigravity Pro v2 &mdash; a fork of the excellent <a href="https://github.com/sujitagarwal/multigravity-cli">multigravity-cli</a> developed by Sujit Agarwal (<a href="https://github.com/sujitagarwal">@sujitagarwal</a>). Core logic and architecture are Sujit's original work; @CodeArtisanRiz added support for the Antigravity IDE (<code>--ide</code> flag) and pro enhancements. MIT License.
     </p>
   </div>
 
@@ -1149,7 +1152,7 @@
       {
         step: 0,
         narration: "Installing Multigravity with one command...",
-        command: "/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/CodeArtisanRiz/multigravity-pro/main/install.sh)\"",
+        command: "/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/CodeArtisanRiz/multigravity-pro-v2/main/install.sh)\"",
         output: [
           { text: "", type: "output" },
           { text: "  Downloading multigravity...", type: "output" },
@@ -1455,7 +1458,7 @@
           ctx.fillStyle = '#e6edf3';
           ctx.font = 'bold 22px -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
           ctx.textAlign = 'center';
-          ctx.fillText('Multigravity Pro', W / 2, H / 2 - 20);
+          ctx.fillText('Multigravity Pro v2', W / 2, H / 2 - 20);
           ctx.fillStyle = '#8b949e';
           ctx.font = '14px -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
           ctx.fillText('Setup Walkthrough', W / 2, H / 2 + 10);

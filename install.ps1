@@ -1,6 +1,6 @@
 $ErrorActionPreference = "Stop"
 
-$REPO = "CodeArtisanRiz/multigravity-pro"
+$REPO = "CodeArtisanRiz/multigravity-pro-v2"
 $BRANCH = "main"
 $RAW = "https://raw.githubusercontent.com/$REPO/$BRANCH"
 $INSTALL_DIR = "$env:USERPROFILE\.local\bin"
