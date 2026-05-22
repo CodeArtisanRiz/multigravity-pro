@@ -67,6 +67,13 @@ multigravity work
 
 Antigravity will open using that profile's isolated settings, accounts, and extensions.
 
+> **💡 Launching the IDE Version:**
+> To open or create a profile with the **Antigravity IDE** version instead of standard Antigravity, add the global `--ide` flag:
+> ```bash
+> multigravity --ide work
+> ```
+> This will target the Antigravity IDE application and create dedicated launcher shortcuts labeled **"Multigravity <name> (IDE)"**. Without the flag, it opens the usual version.
+
 You can also pass normal Antigravity arguments through:
 
 ```bash
@@ -202,6 +209,7 @@ multigravity help
 | Status dashboard | `status` | See which profiles are running, their type, last used time, and disk size — at a glance. |
 | Export / Import | `export work ./work.zip` | Pack a profile into one portable file. Move between machines, share with teammates, back up. |
 | Windows support fixed | All commands | The original Windows support was broken. Rewrote the PowerShell script with proper stream handling, symlink creation, and tested all 40+ edge cases. |
+| Antigravity IDE launch | `multigravity --ide <name>` | Target the Antigravity IDE application instead of standard Antigravity. Creates dedicated launcher shortcuts with "(IDE)" suffix. Without the flag, it opens the usual version. |
 
 Everything from the original [multigravity-cli](https://github.com/sujitagarwal/multigravity-cli) still works — `new`, `list`, `clone`, `rename`, `delete`, `doctor`, `stats`, `update`, `completion`.
 

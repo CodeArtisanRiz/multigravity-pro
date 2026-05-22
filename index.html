@@ -320,6 +320,13 @@ multigravity new personal</code></pre>
 
     <p>Antigravity will open using that profile's isolated settings, accounts, and extensions.</p>
 
+    <div style="margin: 16px 0; padding: 12px 16px; background: #f6f8fa; border-left: 4px solid #0969da; border-radius: 0 6px 6px 0;">
+      <strong>💡 Launching the IDE Version:</strong>
+      To open or create a profile with the <strong>Antigravity IDE</strong> version instead of standard Antigravity, add the global <code>--ide</code> flag:
+      <pre style="margin-top: 8px; font-size: 0.9em; background: #eef1f5; padding: 8px; border-radius: 4px; overflow-x: auto;"><code>multigravity --ide work</code></pre>
+      This will target the Antigravity IDE application and create dedicated launcher shortcuts labeled <strong>"Multigravity &lt;name&gt; (IDE)"</strong>. Without the flag, it opens the usual version.
+    </div>
+
     <p>You can also pass normal Antigravity arguments through:</p>
     <div class="code-block">
       <pre><code>multigravity work --new-window
@@ -487,6 +494,11 @@ multigravity import work.zip client-setup            # custom name</code></pre>
         <td>Windows support fixed</td>
         <td>All commands</td>
         <td>The original Windows support was broken. Rewrote the PowerShell script with proper stream handling, symlink creation, and tested all 40+ edge cases.</td>
+      </tr>
+      <tr>
+        <td>Antigravity IDE launch</td>
+        <td><code>multigravity --ide &lt;name&gt;</code></td>
+        <td>Target the Antigravity IDE application instead of standard Antigravity. Creates dedicated launcher shortcuts with "(IDE)" suffix. Without the flag, it opens the usual version.</td>
       </tr>
     </table>
 
