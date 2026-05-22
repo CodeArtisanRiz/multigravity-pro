@@ -40,6 +40,8 @@ That's it. Multigravity is now installed. Verify everything is set up correctly:
 multigravity doctor
 ```
 
+*(If you are using the Antigravity IDE, verify with `multigravity --ide doctor` instead.)*
+
 ---
 
 ## Getting Started
