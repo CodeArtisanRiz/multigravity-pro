@@ -17,21 +17,68 @@ param (
     [string[]]$ForwardArgs
 )
 
+$USE_IDE = $false
+$allArgsList = [System.Collections.Generic.List[string]]::new()
+$rawArgs = @()
+if ($cmd) { $rawArgs += $cmd }
+if ($arg1) { $rawArgs += $arg1 }
+if ($arg2) { $rawArgs += $arg2 }
+if ($ForwardArgs) { $rawArgs += $ForwardArgs }
+if ($args) { $rawArgs += $args }
+
+foreach ($arg in $rawArgs) {
+    if ($arg -eq '--ide') {
+        $USE_IDE = $true
+    } else {
+        $allArgsList.Add($arg)
+    }
+}
+
+$cmd = if ($allArgsList.Count -gt 0) { $allArgsList[0] } else { $null }
+$arg1 = if ($allArgsList.Count -gt 1) { $allArgsList[1] } else { $null }
+$arg2 = if ($allArgsList.Count -gt 2) { $allArgsList[2] } else { $null }
+$ForwardArgs = if ($allArgsList.Count -gt 3) { $allArgsList.GetRange(3, $allArgsList.Count - 3).ToArray() } else { @() }
+
 $BASE = if ($env:MULTIGRAVITY_HOME) { $env:MULTIGRAVITY_HOME } else { "$env:USERPROFILE\AntigravityProfiles" }
 
 function Find-Antigravity {
+    $appName = "Antigravity"
+    $exeName = "antigravity.exe"
+    if ($USE_IDE) {
+        $appName = "Antigravity IDE"
+        $exeName = "antigravity-ide.exe"
+    }
+
     $paths = @(
-        "$env:LOCALAPPDATA\Programs\Antigravity\Antigravity.exe",
-        "$env:PROGRAMFILES\Antigravity\Antigravity.exe",
-        "${env:ProgramFiles(x86)}\Antigravity\Antigravity.exe"
+        "$env:LOCALAPPDATA\Programs\$appName\$appName.exe",
+        "$env:LOCALAPPDATA\Programs\$appName\Antigravity.exe",
+        "$env:LOCALAPPDATA\Programs\$appName\$exeName",
+        "$env:PROGRAMFILES\$appName\$appName.exe",
+        "$env:PROGRAMFILES\$appName\Antigravity.exe",
+        "$env:PROGRAMFILES\$appName\$exeName",
+        "${env:ProgramFiles(x86)}\$appName\$appName.exe",
+        "${env:ProgramFiles(x86)}\$appName\Antigravity.exe",
+        "${env:ProgramFiles(x86)}\$appName\$exeName"
     )
+    if ($USE_IDE) {
+        $paths += @(
+            "$env:LOCALAPPDATA\Programs\Antigravity\Antigravity IDE.exe",
+            "$env:PROGRAMFILES\Antigravity\Antigravity IDE.exe",
+            "${env:ProgramFiles(x86)}\Antigravity\Antigravity IDE.exe"
+        )
+    }
+
     foreach ($p in $paths) {
         if (Test-Path $p) { return $p }
     }
     
     # Try to find in PATH
-    $exeCommand = Get-Command antigravity.exe -ErrorAction SilentlyContinue
+    $exeCommand = Get-Command $exeName -ErrorAction SilentlyContinue
     if ($exeCommand) { return $exeCommand.Source }
+    if ($USE_IDE) {
+        $exeCommand = Get-Command "antigravityide.exe" -ErrorAction SilentlyContinue
+        if ($exeCommand) { return $exeCommand.Source }
+    }
     
     return $null
 }
@@ -56,7 +103,10 @@ function Test-AuthOnly {
 }
 
 function Write-Usage {
-    Write-Host "Usage: multigravity <command> [args]"
+    Write-Host "Usage: multigravity [options] <command> [args]"
+    Write-Host ""
+    Write-Host "Options:"
+    Write-Host "  --ide                   Launch or create profile with Antigravity IDE"
     Write-Host ""
     Write-Host "Commands:"
     Write-Host "  new <name> [options]    Create a new named profile + Start Menu shortcut"
@@ -76,7 +126,7 @@ function Write-Usage {
     Write-Host "  doctor                  Run a system diagnosis"
     Write-Host "  stats                   Show storage usage per profile"
     Write-Host "  completion              Show setup instructions for shell completion"
-    Write-Host "  <name>                  Launch Antigravity with the given profile"
+    Write-Host "  <name>                  Launch Antigravity profile (add --ide to open IDE)"
     Write-Host "  help                    Show this help"
     Write-Host ""
     Write-Host "Profile names: alphanumeric and hyphens only (e.g. work, personal, test-1)"
@@ -151,11 +201,13 @@ function Invoke-LaunchProfile {
     }
 
     if ([string]::IsNullOrEmpty($APP) -or !(Test-Path $APP)) {
-        Write-Error "Error: Antigravity.exe not found"
+        $expectedAppName = if ($USE_IDE) { "Antigravity IDE" } else { "Antigravity.exe" }
+        Write-Error "Error: $expectedAppName not found"
         exit 1
     }
 
-    Write-Host "Launching Antigravity profile '$PROFILE'"
+    $appLabel = if ($USE_IDE) { "Antigravity IDE" } else { "Antigravity" }
+    Write-Host "Launching $appLabel profile '$PROFILE'"
     
     # Launch Antigravity with isolated USERPROFILE
     $env:USERPROFILE = $PROFILE_DIR
@@ -194,6 +246,9 @@ function Invoke-ListProfiles {
 function Invoke-CreateShortcut {
     param($PROFILE)
     $APP_NAME = "Multigravity $PROFILE"
+    if ($USE_IDE) {
+        $APP_NAME = "Multigravity $PROFILE (IDE)"
+    }
     $SHORTCUT_PATH = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\$APP_NAME.lnk"
     
     $SCRIPT_PATH = $MyInvocation.MyCommand.Path
@@ -206,7 +261,9 @@ function Invoke-CreateShortcut {
     $WshShell = New-Object -comObject WScript.Shell
     $Shortcut = $WshShell.CreateShortcut($SHORTCUT_PATH)
     $Shortcut.TargetPath = "powershell.exe"
-    $Shortcut.Arguments = "-WindowStyle Hidden -ExecutionPolicy Bypass -Command `"& '$SCRIPT_PATH' $PROFILE`""
+    
+    $ideFlag = if ($USE_IDE) { "--ide " } else { "" }
+    $Shortcut.Arguments = "-WindowStyle Hidden -ExecutionPolicy Bypass -Command `"& '$SCRIPT_PATH' $ideFlag$PROFILE`""
     if ($APP) {
         $Shortcut.IconLocation = "$APP, 0"
     }
@@ -287,6 +344,11 @@ function Invoke-DeleteProfile {
                 Remove-Item -Force $SHORTCUT_PATH
                 Write-Host "Removed shortcut: $SHORTCUT_PATH"
             }
+            $SHORTCUT_PATH_IDE = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Multigravity $PROFILE (IDE).lnk"
+            if (Test-Path $SHORTCUT_PATH_IDE) {
+                Remove-Item -Force $SHORTCUT_PATH_IDE
+                Write-Host "Removed shortcut: $SHORTCUT_PATH_IDE"
+            }
             Write-Host "Deleted profile '$PROFILE'"
         } catch {
             Write-Error "Error: could not delete profile directory. Ensure Antigravity is closed and no files are in use."
@@ -317,9 +379,18 @@ function Invoke-RenameProfile {
 
     Rename-Item -Path $OLD_DIR -NewName $NEW
 
+    $hadShortcut = $false
     $OLD_SHORTCUT = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Multigravity $OLD.lnk"
     if (Test-Path $OLD_SHORTCUT) {
         Remove-Item -Force $OLD_SHORTCUT
+        $hadShortcut = $true
+    }
+    $OLD_SHORTCUT_IDE = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Multigravity $OLD (IDE).lnk"
+    if (Test-Path $OLD_SHORTCUT_IDE) {
+        Remove-Item -Force $OLD_SHORTCUT_IDE
+        $hadShortcut = $true
+    }
+    if ($hadShortcut) {
         Invoke-CreateShortcut $NEW
     }
 
@@ -393,10 +464,11 @@ function Invoke-DoctorCli {
     Write-Host "Checking multigravity environment..."
 
     # 1. Antigravity Installation
+    $appLabel = if ($USE_IDE) { "Antigravity IDE" } else { "Antigravity" }
     if ($APP -and (Test-Path $APP)) {
-        Write-Host "  [OK] Antigravity: Found at $APP"
+        Write-Host "  [OK] $appLabel: Found at $APP"
     } else {
-        Write-Host "  [FAIL] Antigravity: Not found. Ensure it is installed or set MULTIGRAVITY_APP."
+        Write-Host "  [FAIL] $appLabel: Not found. Ensure it is installed or set MULTIGRAVITY_APP."
         $errors++
     }
 

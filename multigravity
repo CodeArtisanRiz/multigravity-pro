@@ -4,6 +4,21 @@ set -euo pipefail
 shopt -s nullglob
 
 BASE="${MULTIGRAVITY_HOME:-$HOME/AntigravityProfiles}"
+
+# Parse --ide flag globally from arguments
+USE_IDE=false
+filtered_args=()
+for arg in "$@"; do
+  if [ "$arg" = "--ide" ]; then
+    USE_IDE=true
+  else
+    filtered_args+=("$arg")
+  fi
+done
+
+# Re-set positional parameters without --ide
+set -- "${filtered_args[@]}"
+
 cmd="${1-}"
 
 abort() {
@@ -87,15 +102,27 @@ linux_launcher_dir() {
 }
 
 linux_launcher_path() {
-  printf '%s/%s.sh\n' "$(linux_launcher_dir)" "$1"
+  local suffix=""
+  if [ "${USE_IDE:-false}" = true ]; then
+    suffix="-ide"
+  fi
+  printf '%s/%s%s.sh\n' "$(linux_launcher_dir)" "$1" "$suffix"
 }
 
 linux_desktop_path() {
-  printf '%s/.local/share/applications/multigravity-%s.desktop\n' "$HOME" "$1"
+  local suffix=""
+  if [ "${USE_IDE:-false}" = true ]; then
+    suffix="-ide"
+  fi
+  printf '%s/.local/share/applications/multigravity-%s%s.desktop\n' "$HOME" "$1" "$suffix"
 }
 
 mac_shortcut_path() {
-  printf '%s/Applications/Multigravity %s.app\n' "$HOME" "$1"
+  local suffix=""
+  if [ "${USE_IDE:-false}" = true ]; then
+    suffix=" IDE"
+  fi
+  printf '%s/Applications/Multigravity %s%s.app\n' "$HOME" "$1" "$suffix"
 }
 
 validate_name() {
@@ -141,9 +168,13 @@ find_app() {
 
   case "$(platform)" in
     darwin)
+      local app_name="Antigravity"
+      if [ "${USE_IDE:-false}" = true ]; then
+        app_name="Antigravity IDE"
+      fi
       for candidate in \
-        "/Applications/Antigravity.app" \
-        "$HOME/Applications/Antigravity.app"
+        "/Applications/${app_name}.app" \
+        "$HOME/Applications/${app_name}.app"
       do
         if [ -d "$candidate" ]; then
           printf '%s\n' "$candidate"
@@ -152,13 +183,20 @@ find_app() {
       done
       ;;
     linux)
+      local exe_name="antigravity"
+      local appimage_name="Antigravity"
+      if [ "${USE_IDE:-false}" = true ]; then
+        exe_name="antigravity-ide"
+        appimage_name="Antigravity-IDE"
+      fi
       for candidate in \
-        "antigravity" \
-        "/usr/share/antigravity/antigravity" \
-        "/usr/bin/antigravity" \
-        "/usr/local/bin/antigravity" \
-        "$HOME/.local/bin/antigravity" \
-        "$HOME/Applications/Antigravity.AppImage"
+        "$exe_name" \
+        "/usr/share/$exe_name/$exe_name" \
+        "/usr/bin/$exe_name" \
+        "/usr/local/bin/$exe_name" \
+        "$HOME/.local/bin/$exe_name" \
+        "$HOME/Applications/${appimage_name}.AppImage" \
+        "$HOME/Applications/AntigravityIDE.AppImage"
       do
         if command_or_path "$candidate" >/dev/null 2>&1; then
           command_or_path "$candidate"
@@ -175,12 +213,18 @@ require_app() {
   local app
 
   if ! app="$(find_app)"; then
+    local app_name="Antigravity"
+    local exe_name="antigravity"
+    if [ "${USE_IDE:-false}" = true ]; then
+      app_name="Antigravity IDE"
+      exe_name="antigravity-ide"
+    fi
     case "$(platform)" in
       darwin)
-        abort "Antigravity.app was not found. Install Antigravity or set MULTIGRAVITY_APP to the app bundle path."
+        abort "${app_name}.app was not found. Install ${app_name} or set MULTIGRAVITY_APP to the app bundle path."
         ;;
       linux)
-        abort "Antigravity was not found. Install the Linux app so 'antigravity' is on PATH, or set MULTIGRAVITY_APP to the executable path."
+        abort "${app_name} was not found. Install the Linux app so '${exe_name}' is on PATH, or set MULTIGRAVITY_APP to the executable path."
         ;;
     esac
   fi
@@ -297,6 +341,11 @@ desktop_quote() {
 create_shortcut_darwin() {
   local profile=$1
   local app_name="Multigravity $profile"
+  local ide_flag=""
+  if [ "${USE_IDE:-false}" = true ]; then
+    app_name="Multigravity $profile (IDE)"
+    ide_flag="--ide"
+  fi
   local app_dir
   local run_script
   local launcher
@@ -313,7 +362,7 @@ create_shortcut_darwin() {
   cat <<EOF > "$run_script"
 #!/usr/bin/env bash
 export MULTIGRAVITY_HOME=$(shell_quote "$BASE")
-exec $(shell_quote "$launcher") $(shell_quote "$profile") "\$@"
+exec $(shell_quote "$launcher") $ide_flag $(shell_quote "$profile") "\$@"
 EOF
 
   chmod +x "$run_script"
@@ -360,10 +409,17 @@ create_shortcut_linux() {
   mkdir -p "$launcher_root"
   mkdir -p "$(dirname "$desktop_path")"
 
+  local ide_flag=""
+  local app_name="Multigravity $profile"
+  if [ "${USE_IDE:-false}" = true ]; then
+    ide_flag="--ide"
+    app_name="Multigravity $profile (IDE)"
+  fi
+
   cat <<EOF > "$launcher_path"
 #!/usr/bin/env sh
 export MULTIGRAVITY_HOME=$(shell_quote "$BASE")
-exec $(shell_quote "$launcher") $(shell_quote "$profile") "\$@"
+exec $(shell_quote "$launcher") $ide_flag $(shell_quote "$profile") "\$@"
 EOF
 
   chmod +x "$launcher_path"
@@ -372,7 +428,7 @@ EOF
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=Multigravity $profile
+Name=$app_name
 Comment=Launch the $profile Antigravity profile
 Exec=$(desktop_quote "$launcher_path") %F
 Icon=antigravity
@@ -408,6 +464,13 @@ remove_shortcut() {
         rm -rf "$target"
         print_info "Removed shortcut: $target"
       fi
+
+      local target_ide
+      USE_IDE=true target_ide="$(mac_shortcut_path "$profile")"
+      if [ -d "$target_ide" ]; then
+        rm -rf "$target_ide"
+        print_info "Removed shortcut: $target_ide"
+      fi
       ;;
     linux)
       target="$(linux_launcher_path "$profile")"
@@ -415,11 +478,23 @@ remove_shortcut() {
         rm -f "$target"
         print_info "Removed shortcut: $target"
       fi
+      local target_ide
+      USE_IDE=true target_ide="$(linux_launcher_path "$profile")"
+      if [ -f "$target_ide" ]; then
+        rm -f "$target_ide"
+        print_info "Removed shortcut: $target_ide"
+      fi
 
       target="$(linux_desktop_path "$profile")"
       if [ -f "$target" ]; then
         rm -f "$target"
         print_info "Removed shortcut: $target"
+      fi
+      local desktop_ide
+      USE_IDE=true desktop_ide="$(linux_desktop_path "$profile")"
+      if [ -f "$desktop_ide" ]; then
+        rm -f "$desktop_ide"
+        print_info "Removed shortcut: $desktop_ide"
       fi
       ;;
   esac
@@ -633,10 +708,14 @@ doctor_cli() {
   fi
 
   # 2. Antigravity Installation
+  local app_label="Antigravity"
+  if [ "${USE_IDE:-false}" = true ]; then
+    app_label="Antigravity IDE"
+  fi
   if app=$(find_app); then
-    echo "  [✓] Antigravity: Found at $app"
+    echo "  [✓] $app_label: Found at $app"
   else
-    echo "  [✗] Antigravity: Not found. Ensure it is installed or set MULTIGRAVITY_APP."
+    echo "  [✗] $app_label: Not found. Ensure it is installed or set MULTIGRAVITY_APP."
     errors=$((errors + 1))
   fi
 
@@ -1056,7 +1135,10 @@ import_profile() {
 
 usage() {
   cat <<EOF
-Usage: multigravity <command> [args]
+Usage: multigravity [options] <command> [args]
+
+Options:
+  --ide                   Launch or create profile with Antigravity IDE
 
 Commands:
   new <name> [options]    Create a new named profile + desktop shortcut
@@ -1076,7 +1158,7 @@ Commands:
   doctor                  Run a system diagnosis
   stats                   Show storage usage per profile
   completion              Show setup instructions for shell completion
-  <name> [args...]        Launch Antigravity with the given profile
+  <name> [args...]        Launch Antigravity profile (add --ide to open IDE)
   help                    Show this help
 
 Profile names: alphanumeric and hyphens only (e.g. work, personal, test-1)
